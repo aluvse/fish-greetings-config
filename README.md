@@ -2,12 +2,20 @@
 
 ## Usage
 1. 
+
+
 wrtie in terminal
+
+
 ```
 gnome-text-editor ~/.config/fish/functions/fish_greeting.fish
 ```
 or choose any your fish_greetings file path
+
+
 2.
+
+
 and paste this code below
 
 ```fish
