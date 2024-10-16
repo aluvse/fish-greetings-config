@@ -56,7 +56,7 @@ function fish_greeting
 
     echo -e "\n---------------------------\n"
     # Получаем погоду (замените CITY и API_KEY на свои данные)
-    set city "Bishkek"  # Замените на ваш город
+    set city "YOUR_CITY_NAME"  # Замените на ваш город
     set api_key "YOUR_USER_WEATHER_API"  # Замените на ваш OpenWeather API ключ
     set weather (curl -s "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$api_key&units=metric&lang=ru")
     set temperature (echo $weather | jq '.main.temp')
