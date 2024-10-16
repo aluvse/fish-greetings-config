@@ -1,5 +1,4 @@
-# fish-greetings-config
-my greetings config for linux
+# fish-greetings-config for Linux
 
 ## Usage
 1. 
