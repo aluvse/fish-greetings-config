@@ -8,7 +8,7 @@ wrtie in terminal
 
 
 ```
-gnome-text-editor ~/.config/fish/functions/fish_greeting.fish
+your-any-text-editor ~/.config/fish/functions/fish_greeting.fish
 ```
 or choose any your fish_greetings file path
 
