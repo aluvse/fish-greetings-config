@@ -1,11 +1,13 @@
+```markdown
 # 🐟 Fish Greeting Config (Linux)
 
-Персонализированное приветствие для терминала **Fish Shell**, отображающее:
+Персонализированное приветствие для терминала **Fish Shell**, которое отображает:
 
 - Время и имя пользователя
 - Курс валют
 - Погоду в городе
 - Совет дня
+- Стрик с GitHub (если есть)
 - Задачи из Habitica (`dailies` и `todos`)
 
 ---
@@ -58,16 +60,50 @@ function fish_greeting
     set user_info (curl -s https://api.github.com/users/$username)
     set name (echo $user_info | jq -r '.name')
 
+    # Получаем события с GitHub (публичные)
+    set events (curl -s "https://api.github.com/users/$username/events/public")
+    set streak_days 0
+    set last_commit_date ""
+
+    # Подсчитываем стрик на основе событий
+    for event in (echo $events | jq -c '.[] | select(.type == "PushEvent")')
+        set commit_date (echo $event | jq -r '.created_at')
+        
+        # Если нет последнего коммита, начинаем с текущего
+        if test -z $last_commit_date
+            set last_commit_date $commit_date
+            set streak_days 1
+        else
+            set prev_date (date -d $last_commit_date '+%Y-%m-%d')
+            set current_date (date -d $commit_date '+%Y-%m-%d')
+
+            # Проверяем разницу в днях между коммитами
+            set diff_seconds (math "(($(date -d $commit_date +%s) - $(date -d $last_commit_date +%s)) / 86400)")
+            if test $diff_seconds -eq 1
+                set streak_days (math $streak_days + 1)
+            else
+                break
+            end
+            set last_commit_date $commit_date
+        end
+    end
+
+    # Текущее время
     set current_time (date '+%H:%M:%S')
+
+    # Курсы валют
     set dollar_to_rub (curl -s https://api.exchangerate-api.com/v4/latest/USD | jq '.rates.RUB')
     set dollar_to_kgs (curl -s https://api.exchangerate-api.com/v4/latest/USD | jq '.rates.KGS')
 
+    # Погода
     set weather (curl -s "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$api_key&units=metric&lang=ru")
     set temperature (echo $weather | jq '.main.temp')
     set weather_desc (echo $weather | jq -r '.weather[0].description')
 
+    # Совет дня
     set suggestion (curl -s https://api.adviceslip.com/advice | jq -r '.slip.advice')
 
+    # Задачи Habitica
     set tasks (curl -s -H "x-api-user: $api_user" -H "x-api-key: $api_token" https://habitica.com/api/v3/tasks/user)
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -77,7 +113,9 @@ function fish_greeting
     echo "💵 1 USD = $dollar_to_rub RUB"
     echo "💶 1 USD = $dollar_to_kgs KGS"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "📋 Задачи из Habitica"
+    echo "🔥 GitHub Streak: $streak_days дней"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "📋 Задачи из Habitica"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     # Ежедневные задачи
@@ -155,5 +193,4 @@ end
 - API ключ для погоды можно получить здесь: [OpenWeatherMap](https://openweathermap.org/api)
 - API токены Habitica — в [Настройках пользователя](https://habitica.com/user/settings/api)
 
-
----
+--- 
