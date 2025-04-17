@@ -55,6 +55,7 @@ function fish_greeting
     set api_user "YOUR_HABITICA_USER_ID"
     set api_token "YOUR_HABITICA_API_TOKEN"
     set api_key "YOUR_OPENWEATHER_API_KEY"
+    set duolingo_user "YOUR_DUOLINGO_USERNAME"
 
     # Получаем имя с GitHub
     set user_info (curl -s https://api.github.com/users/$username)
@@ -88,12 +89,24 @@ function fish_greeting
         end
     end
 
+    # Получаем стрик Duolingo (исправленная версия)
+    set duolingo_streak 0
+    if test -n "$duolingo_user"
+        set duolingo_data (curl -s -A "Mozilla/5.0" "https://www.duolingo.com/2017-06-30/users?username=$duolingo_user")
+        if test $status -eq 0
+            set duolingo_streak (echo $duolingo_data | jq -r '.users[0].streak // 0' 2>/dev/null || echo 0)
+        else
+            set duolingo_streak "API error"
+        end
+    end
+
     # Текущее время
     set current_time (date '+%H:%M:%S')
 
     # Курсы валют
     set dollar_to_rub (curl -s https://api.exchangerate-api.com/v4/latest/USD | jq '.rates.RUB')
     set dollar_to_kgs (curl -s https://api.exchangerate-api.com/v4/latest/USD | jq '.rates.KGS')
+    set dollar_to_krw (curl -s https://api.exchangerate-api.com/v4/latest/USD | jq '.rates.KRW')
 
     # Погода
     set weather (curl -s "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$api_key&units=metric&lang=ru")
@@ -107,15 +120,17 @@ function fish_greeting
     set tasks (curl -s -H "x-api-user: $api_user" -H "x-api-key: $api_token" https://habitica.com/api/v3/tasks/user)
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "👋 Привет, Senior 📚 Golang Developer, $name!"
-    echo "🕒 Сейчас: $current_time"
+    echo "👋 Hi Flutter, Golang Developer, $name!"
+    echo "🕒 Now: $current_time"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "💵 1 USD = $dollar_to_rub RUB"
-    echo "💶 1 USD = $dollar_to_kgs KGS"
+    echo "🇷🇺 1 USD = $dollar_to_rub RUB"
+    echo "🇰🇬 1 USD = $dollar_to_kgs KGS"
+    echo "🇰🇷 1 USD = $dollar_to_krw KRW" 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🔥 GitHub Streak: $streak_days дней"
+    echo "🍏 Duolingo Streak: $duolingo_streak days"
+    echo "🔥 GitHub Streak: $streak_days days"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "📋 Задачи из Habitica"
+    echo "📋 Habitica habits"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     # Ежедневные задачи
@@ -132,9 +147,9 @@ function fish_greeting
 
     if test $total_daily -gt 0
         set daily_percent (math "($completed_daily / $total_daily) * 100")
-        echo "🗓 Ежедневные задачи: ✅ $completed_daily из $total_daily ($daily_percent%)"
+        echo "🥶 Habits: ✅ $completed_daily из $total_daily ($daily_percent%)"
     else
-        echo "🗓 Ежедневные задачи: нет"
+        echo "🥶 Habits: empty"
     end
 
     # Вывод самих задач
@@ -164,9 +179,9 @@ function fish_greeting
 
     if test $total_todo -gt 0
         set todo_percent (math "($completed_todo / $total_todo) * 100")
-        echo "🐾 Обычные задачи: ✅ $completed_todo из $total_todo ($todo_percent%)"
+        echo "🐾 Goals: ✅ $completed_todo из $total_todo ($todo_percent%)"
     else
-        echo "🐾 Обычные задачи: нет"
+        echo "🐾 Goals: empty"
     end
 
     for task in (echo $tasks | jq -c '.data[] | select(.type == "todo")')
@@ -180,8 +195,8 @@ function fish_greeting
     end
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🌤 Погода в $city: $temperature°C, $weather_desc"
-    echo "💡 Совет дня: $suggestion"
+    echo "🌀 Weather in $city: $temperature°C, $weather_desc"
+    echo "🕊️ Tips of the day: $suggestion"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 end
 ```
