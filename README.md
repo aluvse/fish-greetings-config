@@ -12,6 +12,7 @@
 - Задачи из Habitica (`dailies` и `todos`)
 - в конце минимальный конфиг для скорости открытия терминала
 
+
 ---
 
 ## 🚀 Установка
@@ -23,6 +24,12 @@ nano ~/.config/fish/config.fish
 ```
 
 Или выбери другой путь, если ты используешь отдельный файл для `fish_greeting`.
+
+
+### Minimal theme
+
+<img width="700" height="750" alt="image" src="https://github.com/user-attachments/assets/60fcffa8-a7f5-402e-9cab-1f291734178b" />
+
 
 ---
 
@@ -49,6 +56,7 @@ brew install jq
 ---
 
 ### 3. Вставь следующий код в `config.fish`
+## Advanced theme
 
 ```fish
 function fish_greeting
@@ -212,6 +220,8 @@ end
 
 --- 
 
+
+## Minimal theme
 
 
 ```
