@@ -62,7 +62,7 @@ brew install jq
 
 ```fish
 function fish_greeting
-    set username "aluvse"
+    set username "YOUR_GITHUB_USERNAME"
     set city "YOUR_CITY"
     set api_user "YOUR_HABITICA_USER_ID"
     set api_token "YOUR_HABITICA_API_TOKEN"
